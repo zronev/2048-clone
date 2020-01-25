@@ -1,0 +1,48 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(4, auto);
+  grid-gap: 10px;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 10px;
+  margin: 0 auto;
+
+  background: $grid-background-color;
+  border-radius: $border-radius;
+
+  &__cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2.5em;
+    font-weight: bold;
+
+    width: 6.5625rem;
+    height: 6.5625rem;
+
+    border-radius: $border-radius;
+    background: $full-cell-color;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0),
+      inset 0 0 0 1px rgba(255, 255, 255, 0);
+
+    animation: appearance 0.25s 1;
+
+    &--empty {
+      background: $empty-cell-color;
+      animation: none
+    }
+  }
+}
+
+@keyframes appearance {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
