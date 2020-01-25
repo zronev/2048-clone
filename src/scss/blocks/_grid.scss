@@ -62,12 +62,32 @@
 
     &--128 {
       color: $cell-light-color;
-      background: $cell-64-color;
+      background: $cell-128-color;
     }
 
     &--256 {
       color: $cell-light-color;
-      background: $cell-64-color;
+      background: $cell-256-color;
+    }
+
+    &--512 {
+      color: $cell-light-color;
+      background: $cell-512-color;
+    }
+
+    &--1024 {
+      color: $cell-light-color;
+      background: $cell-1024-color;
+    }
+
+    &--2048 {
+      color: $cell-light-color;
+      background: $cell-2048-color;
+    }
+
+    &--over-2048 {
+      color: $cell-light-color;
+      background: $cell-2048-color;
     }
   }
 }
