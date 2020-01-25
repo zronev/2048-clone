@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Cell from './Cell'
 import NewGameButton from './NewGameButton'
 import { arrayClone } from '../helpers/utility'
@@ -16,11 +16,11 @@ const Grid = () => {
   const LEFT = 37
   const RIGHT = 39
 
-  const newGame = () => {
+  const newGame = useCallback(() => {
     let gridClone = arrayClone(inititalState)
     spawnTwoRandomCells(gridClone)
     setGrid(gridClone)
-  }
+  }, [inititalState])
 
   const round = (direction, grid) => {
     let gridClone = arrayClone(grid)
@@ -31,6 +31,7 @@ const Grid = () => {
         for (let row = 0; row < 4; row++) {
           for (let column = 0; column < 4; column++) {
             if (!gridClone[row][column]) continue
+            const currentCell = gridClone[row][column]
             let distance = 0
             let foundDistance = false
 
@@ -43,18 +44,139 @@ const Grid = () => {
               else distance++
             }
 
-            if (distance) {
+            let isOutBoundaries = row - (distance + 1) < 0
+            let isEqual =
+              !isOutBoundaries && gridClone[row - (distance + 1)][column] === currentCell
+
+            if (distance || isEqual) {
               let isOutBoundaries = row - (distance + 1) < 0
               let isEqual =
                 !isOutBoundaries &&
-                gridClone[row - (distance + 1)][column] === gridClone[row][column]
+                gridClone[row - (distance + 1)][column] === currentCell
 
-              if (isEqual)
-                gridClone[row - (distance + 1)][column] = gridClone[row][column] ** 2
-              else gridClone[row - distance][column] = gridClone[row][column]
-              
+              if (isEqual) gridClone[row - (distance + 1)][column] = currentCell * 2
+              else gridClone[row - distance][column] = currentCell
+
               gridClone[row][column] = 0
               hasMoveBeenMade = true
+              if (isEqual) row = 0
+            }
+          }
+        }
+        break
+
+      case DOWN:
+        for (let row = 3; row > -1; row--) {
+          for (let column = 0; column < 4; column++) {
+            if (!gridClone[row][column]) continue
+            let distance = 0
+            let foundDistance = false
+
+            while (!foundDistance) {
+              let isOutBoundaries = row + (distance + 1) > 3
+              let doesntColliding =
+                !isOutBoundaries && !gridClone[row + (distance + 1)][column]
+
+              if (!doesntColliding) foundDistance = true
+              else distance++
+            }
+
+            let isOutBoundaries = row + (distance + 1) > 3
+            let isEqual =
+              !isOutBoundaries &&
+              gridClone[row + (distance + 1)][column] === gridClone[row][column]
+
+            if (distance || isEqual) {
+              let isOutBoundaries = row + (distance + 1) > 3
+              let isEqual =
+                !isOutBoundaries &&
+                gridClone[row + (distance + 1)][column] === gridClone[row][column]
+
+              if (isEqual)
+                gridClone[row + (distance + 1)][column] = gridClone[row][column] * 2
+              else gridClone[row + distance][column] = gridClone[row][column]
+
+              gridClone[row][column] = 0
+              hasMoveBeenMade = true
+              if (isEqual) row = 3
+            }
+          }
+        }
+        break
+
+      case LEFT:
+        for (let row = 0; row < 4; row++) {
+          for (let column = 0; column < 4; column++) {
+            if (!gridClone[row][column]) continue
+            let distance = 0
+            let foundDistance = false
+
+            while (!foundDistance) {
+              let isOutBoundaries = column - (distance + 1) < 0
+              let doesntColliding =
+                !isOutBoundaries && !gridClone[row][column - (distance + 1)]
+
+              if (!doesntColliding) foundDistance = true
+              else distance++
+            }
+
+            let isOutBoundaries = column - (distance + 1) < 0
+            let isEqual =
+              !isOutBoundaries &&
+              gridClone[row][column - (distance + 1)] === gridClone[row][column]
+
+            if (distance || isEqual) {
+              let isOutBoundaries = column - (distance + 1) < 0
+              let isEqual =
+                !isOutBoundaries &&
+                gridClone[row][column - (distance + 1)] === gridClone[row][column]
+
+              if (isEqual)
+                gridClone[row][column - (distance + 1)] = gridClone[row][column] * 2
+              else gridClone[row][column - distance] = gridClone[row][column]
+
+              gridClone[row][column] = 0
+              hasMoveBeenMade = true
+              if (isEqual) column = 0
+            }
+          }
+        }
+        break
+
+      case RIGHT:
+        for (let row = 3; row > -1; row--) {
+          for (let column = 0; column < 4; column++) {
+            if (!gridClone[row][column]) continue
+            let distance = 0
+            let foundDistance = false
+
+            while (!foundDistance) {
+              let isOutBoundaries = column + (distance + 1) > 3
+              let doesntColliding =
+                !isOutBoundaries && !gridClone[row][column + (distance + 1)]
+
+              if (!doesntColliding) foundDistance = true
+              else distance++
+            }
+
+            let isOutBoundaries = column + (distance + 1) > 3
+            let isEqual =
+              !isOutBoundaries &&
+              gridClone[row][column + (distance + 1)] === gridClone[row][column]
+
+            if (distance || isEqual) {
+              let isOutBoundaries = column + (distance + 1) > 3
+              let isEqual =
+                !isOutBoundaries &&
+                gridClone[row][column + (distance + 1)] === gridClone[row][column]
+
+              if (isEqual)
+                gridClone[row][column + (distance + 1)] = gridClone[row][column] * 2
+              else gridClone[row][column + distance] = gridClone[row][column]
+
+              gridClone[row][column] = 0
+              hasMoveBeenMade = true
+              if (isEqual) column = 3
             }
           }
         }
@@ -64,9 +186,13 @@ const Grid = () => {
         break
     }
 
-    // hasMoveBeenMade && spawnRandomCell(gridClone)
+    hasMoveBeenMade && spawnRandomCell(gridClone)
     setGrid(gridClone)
   }
+
+  useEffect(() => {
+    newGame()
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = e => round(e.keyCode, grid)
