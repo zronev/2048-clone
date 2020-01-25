@@ -105,8 +105,8 @@ const Grid = () => {
         break
 
       case LEFT:
-        for (let row = 0; row < 4; row++) {
-          for (let column = 0; column < 4; column++) {
+        for (let column = 0; column < 4; column++) {
+          for (let row = 0; row < 4; row++) {
             if (!gridClone[row][column]) continue
             let distance = 0
             let foundDistance = false
@@ -144,8 +144,8 @@ const Grid = () => {
         break
 
       case RIGHT:
-        for (let row = 3; row > -1; row--) {
-          for (let column = 0; column < 4; column++) {
+        for (let column = 3; column > -1; column--) {
+          for (let row = 0; row < 4; row++) {
             if (!gridClone[row][column]) continue
             let distance = 0
             let foundDistance = false
