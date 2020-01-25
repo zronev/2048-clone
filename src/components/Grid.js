@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import Cell from './Cell'
-import NewGameButton from './NewGameButton'
 import { arrayClone } from '../helpers/utility'
 import { spawnTwoRandomCells, spawnRandomCell } from '../helpers/game'
+import Cell from './Cell'
+import NewGameButton from './NewGameButton'
 
 const Grid = () => {
   const inititalState = Array(4)
@@ -195,7 +195,11 @@ const Grid = () => {
   }, [])
 
   useEffect(() => {
-    const handleKeyDown = e => round(e.keyCode, grid)
+    const handleKeyDown = e => {
+      // disable scrolling on arrows
+      if (e.keyCode === UP || e.keyCode === DOWN) e.preventDefault()
+      round(e.keyCode, grid)
+    }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
