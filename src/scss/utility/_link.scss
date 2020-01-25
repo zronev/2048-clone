@@ -1,0 +1,9 @@
+.link {
+  border-bottom: 1.5px solid $main-color;
+  transition: all 0.2s;
+
+  &:hover {
+    color: lighten($color: $main-color, $amount: 30);
+    border-bottom: 1.5px solid lighten($color: $main-color, $amount: 30);
+  }
+}
