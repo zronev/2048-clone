@@ -1,0 +1,21 @@
+.modal {
+  display: none;
+
+  position: fixed;
+  top: 32%;
+
+  padding: 1rem 2rem;
+  border-radius: $border-radius;
+
+  min-width: 250px;
+  min-height: 200px;
+
+  background: $main-background-color;
+
+  &--open {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

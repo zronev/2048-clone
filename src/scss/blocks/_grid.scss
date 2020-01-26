@@ -2,12 +2,12 @@
   display: grid;
   grid-template-columns: repeat(4, auto);
   grid-template-rows: repeat(4, auto);
-  grid-gap: 10px;
+  grid-gap: 1rem;
 
   justify-content: center;
   align-items: center;
 
-  padding: 10px;
+  padding: 1rem;
   margin: 0 auto;
 
   background: $grid-background-color;
@@ -18,7 +18,7 @@
     justify-content: center;
     align-items: center;
 
-    font-size: 2.5em;
+    font-size: 3em;
     font-weight: bold;
 
     width: 6.5625rem;
