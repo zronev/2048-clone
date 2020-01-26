@@ -1,8 +1,8 @@
 import React from 'react'
 
-const NewGameButton = ({ newGame }) => {
+const NewGameButton = ({ newGame, parent }) => {
   return (
-    <button onClick={newGame} className="button button--new-game game__button">
+    <button onClick={newGame} className={`button button--new-game ${parent}__button`}>
       New Game
     </button>
   )
