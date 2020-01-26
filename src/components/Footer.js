@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="footer">
       <p className="footer__para">
-        <span className="bold">HOW TO PLAY</span>: Use your{' '}
+        <span className="bold">HOW TO PLAY:</span> Use your{' '}
         <span className="bold">arrow keys</span> to move the tiles. When two tiles with
         the same number touch, they <span className="bold">merge into one!</span>
       </p>
