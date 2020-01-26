@@ -3,12 +3,15 @@ import { arrayClone } from '../helpers/utility'
 import { spawnTwoRandomCells, spawnRandomCell } from '../helpers/cell'
 import Cell from './Cell'
 import NewGameButton from './NewGameButton'
+import { checkUp, checkDown, checkLeft, checkRight } from '../helpers/moves'
+import ModalLost from './ModalLost'
 
 const Grid = () => {
   const inititalState = Array(4)
     .fill()
     .map(() => Array(4).fill(0))
   const [grid, setGrid] = useState(inititalState)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   // Key codes
   const UP = 38
@@ -17,6 +20,7 @@ const Grid = () => {
   const RIGHT = 39
 
   const newGame = useCallback(() => {
+    setModalIsOpen(false)
     let gridClone = arrayClone(inititalState)
     spawnTwoRandomCells(gridClone)
     setGrid(gridClone)
@@ -196,6 +200,30 @@ const Grid = () => {
   }, [])
 
   useEffect(() => {
+    const checkIsGridFull = grid => {
+      for (let row = 0; row < 4; row++) {
+        for (let column = 0; column < 4; column++) {
+          if (!grid[row][column]) return false
+        }
+      }
+      return true
+    }
+
+    const checkIsGameLost = () => {
+      console.log('checkUp: ', checkUp(grid))
+      console.log('checkDown: ', checkDown(grid))
+      console.log('checkLeft: ', checkLeft(grid))
+      console.log('checkRight: ', checkRight(grid))
+      if (!checkUp(grid) && !checkDown(grid) && !checkLeft(grid) && !checkRight(grid)) {
+        setModalIsOpen(true)
+        console.log('YOU LOST')
+      }
+    }
+
+    if (checkIsGridFull(grid)) checkIsGameLost()
+  }, [grid])
+
+  useEffect(() => {
     const handleKeyDown = e => {
       // disable scrolling on arrows
       if (e.keyCode === UP || e.keyCode === DOWN) e.preventDefault()
@@ -208,10 +236,11 @@ const Grid = () => {
 
   return (
     <section className="game">
-      <NewGameButton newGame={newGame} />
+      <NewGameButton newGame={newGame} parent="game" />
       <main className="grid">
         {grid.map(row => row.map((cell, index) => <Cell key={index} value={cell} />))}
       </main>
+      <ModalLost isOpen={modalIsOpen} newGame={newGame} />
     </section>
   )
 }
