@@ -4,6 +4,8 @@
   grid-template-rows: repeat(4, auto);
   grid-gap: 1rem;
 
+  position: relative;
+
   justify-content: center;
   align-items: center;
 
@@ -21,8 +23,8 @@
     font-size: 3em;
     font-weight: bold;
 
-    width: 6.5625rem;
-    height: 6.5625rem;
+    width: 6.5rem;
+    height: 6.5rem;
 
     border-radius: $border-radius;
     background: $full-cell-color;
@@ -100,3 +102,5 @@
     transform: scale(1);
   }
 }
+
+
