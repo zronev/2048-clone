@@ -55,9 +55,44 @@ const Grid = () => {
   }, [grid])
 
   useEffect(() => {
-    const round = (direction, grid) => {
-      let gridClone = arrayClone(grid)
+    let gridClone = arrayClone(grid)
 
+    let xDown = null
+    let yDown = null
+
+    const getTouches = e => e.touches
+
+    const handleTouchStart = e => {
+      const firstTouch = getTouches(e)[0]
+      xDown = firstTouch.clientX
+      yDown = firstTouch.clientY
+    }
+
+    const handleTouchMove = e => {
+      if (!xDown || !yDown) return
+
+      let xUp = e.touches[0].clientX
+      let yUp = e.touches[0].clientY
+
+      let xDiff = xDown - xUp
+      let yDiff = yDown - yUp
+
+      if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        if (xDiff > 0) moveLeft(gridClone)
+        else moveRight(gridClone)
+      } else {
+        if (yDiff > 0) moveUp(gridClone)
+        else moveDown(gridClone)
+      }
+
+      xDown = null
+      yDown = null
+
+      !arraysEqual(grid, gridClone) && spawnRandomCell(gridClone)
+      setGrid(gridClone)
+    }
+
+    const round = direction => {
       switch (direction) {
         case UP:
           moveUp(gridClone)
@@ -82,11 +117,17 @@ const Grid = () => {
     const handleKeyDown = e => {
       // disable scrolling on arrows
       if (e.keyCode === UP || e.keyCode === DOWN) e.preventDefault()
-      round(e.keyCode, grid)
+      round(e.keyCode)
     }
 
     document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
+    document.addEventListener('touchstart', handleTouchStart)
+    document.addEventListener('touchmove', handleTouchMove)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchmove', handleTouchMove)
+    }
   }, [grid])
 
   return (
