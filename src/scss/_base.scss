@@ -1,7 +1,10 @@
 body {
+  font-size: calc(12px + 0.35vw);
   font-family: 'Montserrat', sans-serif;
+
   color: $main-color;
   background: $main-background-color;
+
   height: 100vh;
 }
 
