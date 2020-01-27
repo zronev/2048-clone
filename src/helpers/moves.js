@@ -1,7 +1,8 @@
-export const checkUp = grid => {
+export const moveUp = (grid, hasMoveBeenMade) => {
   for (let row = 0; row < 4; row++) {
     for (let column = 0; column < 4; column++) {
       const currentCell = grid[row][column]
+      if (!currentCell) continue
 
       let isOutBoundaries = (distance, row) => row - (distance + 1) < 0
 
@@ -22,13 +23,19 @@ export const checkUp = grid => {
         else distance++
       }
 
-      if (distance || isEqual(row, column, distance)) return true
+      if (distance || isEqual(row, column, distance)) {
+        if (isEqual(row, column, distance))
+          grid[row - (distance + 1)][column] = currentCell * 2
+        else grid[row - distance][column] = currentCell
+
+        grid[row][column] = 0
+        if (isEqual(row, column, distance)) row = 0
+      }
     }
   }
-  return false
 }
 
-export const checkDown = grid => {
+export const moveDown = grid => {
   for (let row = 3; row > -1; row--) {
     for (let column = 0; column < 4; column++) {
       const currentCell = grid[row][column]
@@ -53,13 +60,19 @@ export const checkDown = grid => {
         else distance++
       }
 
-      if (distance || isEqual(row, column, distance)) return true
+      if (distance || isEqual(row, column, distance)) {
+        if (isEqual(row, column, distance))
+          grid[row + (distance + 1)][column] = grid[row][column] * 2
+        else grid[row + distance][column] = grid[row][column]
+
+        grid[row][column] = 0
+        if (isEqual(row, column, distance)) row = 3
+      }
     }
   }
-  return false
 }
 
-export const checkLeft = grid => {
+export const moveLeft = grid => {
   for (let column = 0; column < 4; column++) {
     for (let row = 0; row < 4; row++) {
       const currentCell = grid[row][column]
@@ -84,13 +97,19 @@ export const checkLeft = grid => {
         else distance++
       }
 
-      if (distance || isEqual(row, column, distance)) return true
+      if (distance || isEqual(row, column, distance)) {
+        if (isEqual(row, column, distance))
+          grid[row][column - (distance + 1)] = grid[row][column] * 2
+        else grid[row][column - distance] = grid[row][column]
+
+        grid[row][column] = 0
+        if (isEqual(row, column, distance)) column = 0
+      }
     }
   }
-  return false
 }
 
-export const checkRight = grid => {
+export const moveRight = grid => {
   for (let column = 3; column > -1; column--) {
     for (let row = 0; row < 4; row++) {
       const currentCell = grid[row][column]
@@ -115,8 +134,14 @@ export const checkRight = grid => {
         else distance++
       }
 
-      if (distance || isEqual(row, column, distance)) return true
+      if (distance || isEqual(row, column, distance)) {
+        if (isEqual(row, column, distance))
+          grid[row][column + (distance + 1)] = grid[row][column] * 2
+        else grid[row][column + distance] = grid[row][column]
+
+        grid[row][column] = 0
+        if (isEqual) column = 3
+      }
     }
   }
-  return false
 }
