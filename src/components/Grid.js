@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 import ModalLost from './ModalLost'
 import Cell from './Cell'
@@ -15,6 +15,7 @@ const Grid = () => {
     .map(() => Array(4).fill(0))
   const [grid, setGrid] = useState(inititalState)
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const gridRef = useRef()
 
   // Key codes
   const UP = 38
@@ -55,6 +56,7 @@ const Grid = () => {
   }, [grid])
 
   useEffect(() => {
+    const gridNode = gridRef.current
     let gridClone = arrayClone(grid)
 
     let xDown = null
@@ -69,6 +71,7 @@ const Grid = () => {
     }
 
     const handleTouchMove = e => {
+      e.preventDefault()
       if (!xDown || !yDown) return
 
       let xUp = e.touches[0].clientX
@@ -121,19 +124,19 @@ const Grid = () => {
     }
 
     document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('touchstart', handleTouchStart)
-    document.addEventListener('touchmove', handleTouchMove)
+    gridNode.addEventListener('touchstart', handleTouchStart)
+    gridNode.addEventListener('touchmove', handleTouchMove)
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      document.removeEventListener('touchstart', handleTouchStart)
-      document.removeEventListener('touchmove', handleTouchMove)
+      gridNode.removeEventListener('touchstart', handleTouchStart)
+      gridNode.removeEventListener('touchmove', handleTouchMove)
     }
   }, [grid])
 
   return (
     <section className="game">
       <NewGameButton newGame={newGame} parent="game" />
-      <main className="grid">
+      <main ref={gridRef} className="grid">
         {grid.map((row, index) =>
           row.map((cell, column) => (
             <Cell key={column} value={cell} row={index} column={column} />
