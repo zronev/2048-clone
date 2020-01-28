@@ -1,4 +1,4 @@
-export const moveUp = (grid, hasMoveBeenMade) => {
+export const moveUp = (grid, roundScore) => {
   for (let row = 0; row < 4; row++) {
     for (let column = 0; column < 4; column++) {
       const currentCell = grid[row][column]
@@ -24,18 +24,20 @@ export const moveUp = (grid, hasMoveBeenMade) => {
       }
 
       if (distance || isEqual(row, column, distance)) {
-        if (isEqual(row, column, distance))
+        if (isEqual(row, column, distance)) {
           grid[row - (distance + 1)][column] = currentCell * 2
-        else grid[row - distance][column] = currentCell
+          roundScore += currentCell * 2
+        } else grid[row - distance][column] = currentCell
 
         grid[row][column] = 0
         if (isEqual(row, column, distance)) row = 0
       }
     }
   }
+  return [grid, roundScore]
 }
 
-export const moveDown = grid => {
+export const moveDown = (grid, roundScore) => {
   for (let row = 3; row > -1; row--) {
     for (let column = 0; column < 4; column++) {
       const currentCell = grid[row][column]
@@ -61,18 +63,20 @@ export const moveDown = grid => {
       }
 
       if (distance || isEqual(row, column, distance)) {
-        if (isEqual(row, column, distance))
+        if (isEqual(row, column, distance)) {
           grid[row + (distance + 1)][column] = grid[row][column] * 2
-        else grid[row + distance][column] = grid[row][column]
+          roundScore += currentCell * 2
+        } else grid[row + distance][column] = grid[row][column]
 
         grid[row][column] = 0
         if (isEqual(row, column, distance)) row = 3
       }
     }
   }
+  return [grid, roundScore]
 }
 
-export const moveLeft = grid => {
+export const moveLeft = (grid, roundScore) => {
   for (let column = 0; column < 4; column++) {
     for (let row = 0; row < 4; row++) {
       const currentCell = grid[row][column]
@@ -98,18 +102,20 @@ export const moveLeft = grid => {
       }
 
       if (distance || isEqual(row, column, distance)) {
-        if (isEqual(row, column, distance))
+        if (isEqual(row, column, distance)) {
           grid[row][column - (distance + 1)] = grid[row][column] * 2
-        else grid[row][column - distance] = grid[row][column]
+          roundScore += currentCell * 2
+        } else grid[row][column - distance] = grid[row][column]
 
         grid[row][column] = 0
         if (isEqual(row, column, distance)) column = 0
       }
     }
   }
+  return [grid, roundScore]
 }
 
-export const moveRight = grid => {
+export const moveRight = (grid, roundScore) => {
   for (let column = 3; column > -1; column--) {
     for (let row = 0; row < 4; row++) {
       const currentCell = grid[row][column]
@@ -117,14 +123,14 @@ export const moveRight = grid => {
 
       let isOutBoundaries = (column, distance) => column + (distance + 1) > 3
 
-      let cellOnLeft = (row, column, distance) => grid[row][column + (distance + 1)]
+      let cellOnRight = (row, column, distance) => grid[row][column + (distance + 1)]
 
       let isEqual = (row, column, distance) =>
         !isOutBoundaries(column, distance) &&
-        cellOnLeft(row, column, distance) === currentCell
+        cellOnRight(row, column, distance) === currentCell
 
       let doesntColliding = (row, column, distance) =>
-        !isOutBoundaries(column, distance) && !cellOnLeft(row, column, distance)
+        !isOutBoundaries(column, distance) && !cellOnRight(row, column, distance)
 
       let distance = 0
       let foundDistance = false
@@ -135,13 +141,14 @@ export const moveRight = grid => {
       }
 
       if (distance || isEqual(row, column, distance)) {
-        if (isEqual(row, column, distance))
+        if (isEqual(row, column, distance)) {
           grid[row][column + (distance + 1)] = grid[row][column] * 2
-        else grid[row][column + distance] = grid[row][column]
+          roundScore += currentCell * 2
+        } else grid[row][column + distance] = grid[row][column]
 
         grid[row][column] = 0
-        if (isEqual) column = 3
       }
     }
   }
+  return [grid, roundScore]
 }
