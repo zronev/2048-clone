@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import ModalLost from './ModalLost'
 import Cell from './Cell'
 import NewGameButton from './NewGameButton'
+import UndoButton from './UndoButton'
+import Score from './Score'
 
 import { arrayClone, arraysEqual } from '../helpers/utility'
 import { spawnTwoRandomCells, spawnRandomCell } from '../helpers/cell'
@@ -10,12 +12,19 @@ import { moveUp, moveDown, moveLeft, moveRight } from '../helpers/moves'
 import { checkUp, checkDown, checkLeft, checkRight } from '../helpers/checks'
 
 const Grid = () => {
-  const inititalState = Array(4)
-    .fill()
-    .map(() => Array(4).fill(0))
-  const [grid, setGrid] = useState(inititalState)
-  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const inititalState = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
+
   const gridRef = useRef()
+  const [grid, setGrid] = useState(inititalState)
+  const [score, setScore] = useState(0)
+  const [bestScore, setBestScore] = useState(0)
+  const [lastTurnGrid, setLastTurnGrid] = useState([inititalState])
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   // Key codes
   const UP = 38
@@ -24,8 +33,12 @@ const Grid = () => {
   const RIGHT = 39
 
   const newGame = useCallback(() => {
+    // Reset
     setModalIsOpen(false)
+    setLastTurnGrid(inititalState)
+    setScore(0)
 
+    // New grid with random cells
     let gridClone = arrayClone(inititalState)
     spawnTwoRandomCells(gridClone)
     setGrid(gridClone)
@@ -33,6 +46,7 @@ const Grid = () => {
 
   useEffect(() => {
     newGame()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -56,8 +70,11 @@ const Grid = () => {
   }, [grid])
 
   useEffect(() => {
+    score > bestScore && setBestScore(score)
+
     const gridNode = gridRef.current
     let gridClone = arrayClone(grid)
+    let roundScore = 0
 
     let xDown = null
     let yDown = null
@@ -81,39 +98,45 @@ const Grid = () => {
       let yDiff = yDown - yUp
 
       if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        if (xDiff > 0) moveLeft(gridClone)
-        else moveRight(gridClone)
+        if (xDiff > 0) [gridClone, roundScore] = moveLeft(gridClone, roundScore)
+        else [gridClone, roundScore] = moveRight(gridClone, roundScore)
       } else {
-        if (yDiff > 0) moveUp(gridClone)
-        else moveDown(gridClone)
+        if (yDiff > 0) [gridClone, roundScore] = moveUp(gridClone, roundScore)
+        else [gridClone, roundScore] = moveDown(gridClone, roundScore)
       }
 
       xDown = null
       yDown = null
 
       !arraysEqual(grid, gridClone) && spawnRandomCell(gridClone)
+      setLastTurnGrid(grid)
+      
       setGrid(gridClone)
     }
 
     const round = direction => {
       switch (direction) {
         case UP:
-          moveUp(gridClone)
+          [gridClone, roundScore] = moveUp(gridClone, roundScore)
           break
         case DOWN:
-          moveDown(gridClone)
+          [gridClone, roundScore] = moveDown(gridClone, roundScore)
           break
         case LEFT:
-          moveLeft(gridClone)
+          [gridClone, roundScore] = moveLeft(gridClone, roundScore)
           break
         case RIGHT:
-          moveRight(gridClone)
+          [gridClone, roundScore] = moveRight(gridClone, roundScore)
           break
         default:
           break
       }
 
+      setScore(score => score + roundScore)
+
+      setLastTurnGrid(lastTurnGrid => [...lastTurnGrid, grid])
       !arraysEqual(grid, gridClone) && spawnRandomCell(gridClone)
+
       setGrid(gridClone)
     }
 
@@ -131,11 +154,23 @@ const Grid = () => {
       gridNode.removeEventListener('touchstart', handleTouchStart)
       gridNode.removeEventListener('touchmove', handleTouchMove)
     }
-  }, [grid])
+  }, [bestScore, grid, score])
+
+  const handleUndoClick = () => {
+    if (arraysEqual(lastTurnGrid, inititalState)) return
+    const length = lastTurnGrid.length
+    setGrid(lastTurnGrid[length - 1])
+  }
 
   return (
     <section className="game">
-      <NewGameButton newGame={newGame} parent="game" />
+      <header className="game-info">
+        <Score score={score} bestScore={bestScore} />
+        <div className="buttons">
+          <UndoButton handleUndoClick={handleUndoClick} />
+          <NewGameButton newGame={newGame} parent="game-info" />
+        </div>
+      </header>
       <main ref={gridRef} className="grid">
         {grid.map((row, index) =>
           row.map((cell, column) => (
