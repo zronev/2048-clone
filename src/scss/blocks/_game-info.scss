@@ -1,0 +1,9 @@
+.game-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  &__restart {
+    margin-left: 1rem;
+  }
+}

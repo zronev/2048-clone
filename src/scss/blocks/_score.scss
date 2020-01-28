@@ -1,0 +1,27 @@
+.score {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  padding: 1rem 1.5rem;
+  border-radius: $border-radius;
+
+  font-weight: bold;
+  background: $score-background-color;
+
+  &__title {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: $score-title-color;
+  }
+
+  &__number {
+    font-size: 1.4em;
+    color: $score-number-color;
+  }
+
+  &--best {
+    margin-left: 1rem;
+  }
+}

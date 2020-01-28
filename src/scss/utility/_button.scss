@@ -15,9 +15,9 @@
   border: none;
   border-radius: $border-radius;
 
-  transition: all 0.2s;
+  transition: all 0.1s;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 }

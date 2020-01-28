@@ -1,15 +1,19 @@
 @import 'variables';
 @import 'base';
 
-@import './blocks/main';
-@import './blocks/header';
-@import './blocks/game';
-@import './blocks/grid';
-@import './blocks/footer';
-@import './blocks/modal';
-
 @import './utility/button';
 @import './utility/bold';
 @import './utility/link';
+
+@import './blocks/main';
+@import './blocks/header';
+@import './blocks/game';
+@import './blocks/game-info';
+@import './blocks/score-bar';
+@import './blocks/score';
+@import './blocks/buttons';
+@import './blocks/grid';
+@import './blocks/footer';
+@import './blocks/modal';
 
 @import 'media';
