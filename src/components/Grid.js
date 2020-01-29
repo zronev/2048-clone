@@ -20,6 +20,7 @@ const Grid = () => {
   const [grid, setGrid] = useState(inititalState);
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
+  const [isBestScoreInCurrentGame, setIsBestScoreInCurrentGame] = useState(false);
   const [lastTurnGrid, setLastTurnGrid] = useState(inititalState);
   const [lastTurnScore, setLastTurnScore] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -32,6 +33,7 @@ const Grid = () => {
 
   const newGame = useCallback(() => {
     // Reset
+    setIsBestScoreInCurrentGame(false);
     setModalIsOpen(false);
     setLastTurnGrid(inititalState);
     setScore(0);
@@ -46,6 +48,12 @@ const Grid = () => {
     newGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const updateBestScore = useCallback(score => {
+    if (score <= bestScore) return;
+    setBestScore(score);
+    setIsBestScoreInCurrentGame(true);
+  }, [bestScore])
 
   useEffect(() => {
     const checkIsGridFull = grid => {
@@ -69,7 +77,7 @@ const Grid = () => {
   }, [grid]);
 
   useEffect(() => {
-    score > bestScore && setBestScore(score);
+    updateBestScore(score)
 
     const gridNode = gridRef.current;
     let gridClone = arrayClone(grid);
@@ -153,10 +161,12 @@ const Grid = () => {
       gridNode.removeEventListener('touchstart', handleTouchStart);
       gridNode.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [bestScore, grid, score]);
+  }, [bestScore, grid, score, updateBestScore]);
 
   const handleUndoClick = () => {
     if (arraysEqual(lastTurnGrid, inititalState)) return;
+
+    if (score === bestScore && isBestScoreInCurrentGame) setBestScore(lastTurnScore);
     setGrid(lastTurnGrid);
     setScore(lastTurnScore);
   };
@@ -174,7 +184,7 @@ const Grid = () => {
         </div>
       </header>
       <main ref={gridRef} className="grid">
-        {grid.map((row, index) =>
+        {grid.map(row =>
           row.map((cell, column) => (
             <Cell key={column} cell={cell} row={row} column={column} />
           )),
