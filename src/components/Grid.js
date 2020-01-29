@@ -14,28 +14,7 @@ import { checkUp, checkDown, checkLeft, checkRight } from '../helpers/checks';
 const Grid = () => {
   const inititalState = Array(4)
     .fill()
-    .map(() => Array(4).fill(new emptyCell(2)));
-
-  // const inititalState = [
-  //   [0, 16, 8, 0],
-  //   [16, 8, 0, 8],
-  //   [8, 0, 8, 16],
-  //   [0, 8, 16, 0],
-  // ]
-
-  // const inititalState = [
-  //   [0, 16, 8, 0],
-  //   [0, 8, 0, 0],
-  //   [8, 0, 8, 16],
-  //   [0, 8, 16, 0],
-  // ];
-
-  // const inititalState = [
-  //   [2, 8, 8, 4],
-  //   [0, 0, 0, 0],
-  //   [0, 0, 0, 0],
-  //   [0, 0, 0, 0],
-  // ]
+    .map(() => Array(4).fill(new emptyCell(0)));
 
   const gridRef = useRef();
   const [grid, setGrid] = useState(inititalState);
@@ -81,7 +60,7 @@ const Grid = () => {
 
     const checkIsGameLost = () => {
       const noMovesAvailable =
-        !checkUp(grid) && !checkDown(grid) && !checkLeft(grid) && !checkRight(grid);
+        checkUp(grid) && checkDown(grid) && checkLeft(grid) && checkRight(grid);
 
       noMovesAvailable && setModalIsOpen(true);
     };

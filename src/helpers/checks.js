@@ -1,122 +1,111 @@
+import { arrayClone, arraysEqual } from './utility';
+import { emptyCell } from './cell';
+
 export const checkUp = grid => {
-  for (let row = 0; row < 4; row++) {
-    for (let column = 0; column < 4; column++) {
-      const currentCell = grid[row][column]
+  // Rotate and flip direction from up to right
+  let newGrid = rotate(arrayClone(grid));
+  newGrid = flip(newGrid);
 
-      let isOutBoundaries = (distance, row) => row - (distance + 1) < 0
+  newGrid = move(newGrid);
 
-      let cellAbove = (row, column, distance) => grid[row - (distance + 1)][column]
-
-      let isEqual = (row, column, distance) =>
-        !isOutBoundaries(distance, row) &&
-        cellAbove(row, column, distance) === currentCell
-
-      let doesntColliding = (row, column, distance) =>
-        !isOutBoundaries(distance, row) && !cellAbove(row, column, distance)
-
-      let distance = 0
-      let foundDistance = false
-
-      while (!foundDistance) {
-        if (!doesntColliding(row, column, distance)) foundDistance = true
-        else distance++
-      }
-
-      if (distance || isEqual(row, column, distance)) return true
-    }
-  }
-  return false
-}
+  // Rotate and flip back
+  newGrid = flip(newGrid);
+  newGrid = translate(newGrid);
+  return arraysEqual(grid, newGrid);
+};
 
 export const checkDown = grid => {
-  for (let row = 3; row > -1; row--) {
-    for (let column = 0; column < 4; column++) {
-      const currentCell = grid[row][column]
-      if (!currentCell) continue
+  // Rotate direction from down to right
+  let newGrid = arrayClone(grid);
+  newGrid = rotate(newGrid);
 
-      let isOutBoundaries = (row, distance) => row + (distance + 1) > 3
+  newGrid = move(newGrid);
 
-      let cellBelow = (row, column, distance) => grid[row + (distance + 1)][column]
-
-      let isEqual = (row, column, distance) =>
-        !isOutBoundaries(row, distance) &&
-        cellBelow(row, column, distance) === currentCell
-
-      let doesntColliding = (row, column, distance) =>
-        !isOutBoundaries(row, distance) && !cellBelow(row, column, distance)
-
-      let distance = 0
-      let foundDistance = false
-
-      while (!foundDistance) {
-        if (!doesntColliding(row, column, distance)) foundDistance = true
-        else distance++
-      }
-
-      if (distance || isEqual(row, column, distance)) return true
-    }
-  }
-  return false
-}
+  // Rotate back
+  newGrid = translate(newGrid);
+  return arraysEqual(grid, newGrid);
+};
 
 export const checkLeft = grid => {
-  for (let column = 0; column < 4; column++) {
-    for (let row = 0; row < 4; row++) {
-      const currentCell = grid[row][column]
-      if (!currentCell) continue
+  // Flip direction from left to right
+  let newGrid = flip(arrayClone(grid));
 
-      let isOutBoundaries = (column, distance) => column - (distance + 1) < 0
+  newGrid = move(newGrid);
 
-      let cellOnLeft = (row, column, distance) => grid[row][column - (distance + 1)]
-
-      let isEqual = (row, column, distance) =>
-        !isOutBoundaries(column, distance) &&
-        cellOnLeft(row, column, distance) === currentCell
-
-      let doesntColliding = (row, column, distance) =>
-        !isOutBoundaries(column, distance) && !cellOnLeft(row, column, distance)
-
-      let distance = 0
-      let foundDistance = false
-
-      while (!foundDistance) {
-        if (!doesntColliding(row, column, distance)) foundDistance = true
-        else distance++
-      }
-
-      if (distance || isEqual(row, column, distance)) return true
-    }
-  }
-  return false
-}
+  // Flip back
+  newGrid = flip(newGrid);
+  return arraysEqual(grid, newGrid);
+};
 
 export const checkRight = grid => {
-  for (let column = 3; column > -1; column--) {
-    for (let row = 0; row < 4; row++) {
-      const currentCell = grid[row][column]
-      if (!currentCell) continue
+  let newGrid = arrayClone(grid);
+  newGrid = move(newGrid);
 
-      let isOutBoundaries = (column, distance) => column + (distance + 1) > 3
+  return arraysEqual(grid, newGrid);
+};
 
-      let cellOnLeft = (row, column, distance) => grid[row][column + (distance + 1)]
+const move = grid => {
+  let newGrid = arrayClone(grid);
 
-      let isEqual = (row, column, distance) =>
-        !isOutBoundaries(column, distance) &&
-        cellOnLeft(row, column, distance) === currentCell
+  for (let row = 0; row < 4; row++) {
+    newGrid[row] = slide(newGrid[row]);
+    newGrid[row] = merge(newGrid[row]);
+    newGrid[row] = slide(newGrid[row]);
+  }
 
-      let doesntColliding = (row, column, distance) =>
-        !isOutBoundaries(column, distance) && !cellOnLeft(row, column, distance)
+  return newGrid;
+};
 
-      let distance = 0
-      let foundDistance = false
+const slide = arr => {
+  let modifiedArr = arrayClone(arr);
 
-      while (!foundDistance) {
-        if (!doesntColliding(row, column, distance)) foundDistance = true
-        else distance++
-      }
+  modifiedArr = modifiedArr.filter(cell => cell.value);
+  modifiedArr = modifiedArr.map(cell =>
+    cell.className !== 'merged' ? { ...cell, className: 'moved' } : cell,
+  );
 
-      if (distance || isEqual(row, column, distance)) return true
+  const zeros = new Array(4 - modifiedArr.length).fill(new emptyCell(0));
+  modifiedArr = [...zeros, ...modifiedArr];
+
+  return modifiedArr;
+};
+
+const merge = arr => {
+  let modifiedArr = arrayClone(arr);
+
+  for (let i = 3; i > 0; i--) {
+    if (modifiedArr[i - 1].value === modifiedArr[i].value) {
+      modifiedArr[i].value = modifiedArr[i - 1].value * 2;
+      modifiedArr[i].className = 'merged';
+      modifiedArr[i - 1].value = 0;
     }
   }
-  return false
-}
+
+  return modifiedArr;
+};
+
+const flip = grid => {
+  let modifiedArr = arrayClone(grid);
+  return modifiedArr.map(row => row.reverse());
+};
+
+const rotate = grid => {
+  let rotatedGrid = arrayClone(grid);
+  for (let row = 0; row < 4; row++) {
+    for (let col = 0; col < 4; col++) {
+      rotatedGrid[row][col] = grid[col][row];
+    }
+  }
+
+  return rotatedGrid;
+};
+
+const translate = grid => {
+  let translatedGrid = arrayClone(grid);
+
+  translatedGrid = rotate(translatedGrid);
+  translatedGrid = rotate(translatedGrid);
+  translatedGrid = rotate(translatedGrid);
+
+  return translatedGrid;
+};
