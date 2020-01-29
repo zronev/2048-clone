@@ -184,11 +184,14 @@ const Grid = () => {
 
   return (
     <section className="game">
-      <header className="game-info">
-        <Score score={score} bestScore={bestScore} />
+      <header className="game-header">
+        <div className="game-info">
+          <h1 className="game-info__title">2048 Clone</h1>
+          <Score score={score} bestScore={bestScore} />
+        </div>
         <div className="buttons">
           <UndoButton handleUndoClick={handleUndoClick} />
-          <NewGameButton newGame={newGame} parent="game-info" />
+          <NewGameButton newGame={newGame} parent="game-header" />
         </div>
       </header>
       <main ref={gridRef} className="grid">
