@@ -1,9 +1,11 @@
 .game-info {
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  align-items: center;
+  margin-top: 2rem;
 
-  &__restart {
-    margin-left: 1rem;
+  &__title {
+    margin: 0;
+    font-size: calc(14px + 1.5vw);
+    width: 100%;
   }
 }

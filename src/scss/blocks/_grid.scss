@@ -31,11 +31,8 @@
     box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0),
       inset 0 0 0 1px rgba(255, 255, 255, 0);
 
-    animation: appearance 0.25s 1;
-
     &--empty {
       background: $empty-cell-color;
-      animation: none;
     }
 
     &--4 {
@@ -94,13 +91,25 @@
   }
 }
 
-@keyframes appearance {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
+// @keyframes appearance {
+//   from {
+//     transform: scale(0);
+//   }
+//   to {
+//     transform: scale(1);
+//   }
+// }
 
+// @keyframes pop-up {
+//   0% {
+//     transform: scale(0.75);
+//   }
+  
+//   50% {
+//     transform: scale(1.25);
+//   }
 
+//   100% {
+//     transform: scale(1);
+//   }
+// }
