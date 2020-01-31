@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 
 import ModalLost from './ModalLost';
 import Cell from './Cell';
@@ -10,6 +10,8 @@ import { arrayClone, arraysEqual } from '../helpers/utility';
 import { spawnTwoRandomCells, spawnRandomCell, emptyCell } from '../helpers/cell';
 import { moveUp, moveDown, moveLeft, moveRight } from '../helpers/moves';
 import { checkUp, checkDown, checkLeft, checkRight } from '../helpers/checks';
+import { useLocalStorage } from '../helpers/useLocalStorage';
+import uuid from 'uuid';
 
 const Grid = () => {
   const inititalState = Array(4)
@@ -17,13 +19,16 @@ const Grid = () => {
     .map(() => Array(4).fill(new emptyCell(0)));
 
   const gridRef = useRef();
-  const [grid, setGrid] = useState(inititalState);
-  const [score, setScore] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
-  const [isBestScoreInCurrentGame, setIsBestScoreInCurrentGame] = useState(false);
-  const [lastTurnGrid, setLastTurnGrid] = useState(inititalState);
-  const [lastTurnScore, setLastTurnScore] = useState(0);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [grid, setGrid] = useLocalStorage('grid', inititalState);
+  const [score, setScore] = useLocalStorage('score', 0);
+  const [bestScore, setBestScore] = useLocalStorage('bestScore', 0);
+  const [isBestScoreInCurrentGame, setIsBestScoreInCurrentGame] = useLocalStorage(
+    'isBestScoreInCurrentGame',
+    false,
+  );
+  const [lastTurnGrid, setLastTurnGrid] = useLocalStorage('lastTurnGrid', inititalState);
+  const [lastTurnScore, setLastTurnScore] = useLocalStorage('lastTurnScore', 0);
+  const [modalIsOpen, setModalIsOpen] = useLocalStorage('modalIsOpen', false);
 
   // Key codes
   const UP = 38;
@@ -42,42 +47,60 @@ const Grid = () => {
     let gridClone = arrayClone(inititalState);
     spawnTwoRandomCells(gridClone);
     setGrid(gridClone);
-  }, [inititalState]);
+  }, [
+    inititalState,
+    setGrid,
+    setIsBestScoreInCurrentGame,
+    setLastTurnGrid,
+    setModalIsOpen,
+    setScore,
+  ]);
+
+  const checkIsGridFull = grid => {
+    for (let row = 0; row < 4; row++) {
+      for (let column = 0; column < 4; column++) {
+        if (!grid[row][column].value) return false;
+        grid[row][column].className = '';
+      }
+    }
+    return true;
+  };
+
+  const checkIsGameLost = useCallback(() => {
+    const noMovesAvailable =
+      checkUp(grid) && checkDown(grid) && checkLeft(grid) && checkRight(grid);
+
+    noMovesAvailable && setModalIsOpen(true);
+  }, [grid, setModalIsOpen]);
 
   useEffect(() => {
-    newGame();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const updateBestScore = useCallback(score => {
-    if (score <= bestScore) return;
-    setBestScore(score);
-    setIsBestScoreInCurrentGame(true);
-  }, [bestScore])
-
-  useEffect(() => {
-    const checkIsGridFull = grid => {
+    const checkIsGridEmpty = grid => {
       for (let row = 0; row < 4; row++) {
         for (let column = 0; column < 4; column++) {
-          if (!grid[row][column].value) return false;
-          grid[row][column].className = '';
+          if (grid[row][column].value) return false;
         }
       }
       return true;
     };
 
-    const checkIsGameLost = () => {
-      const noMovesAvailable =
-        checkUp(grid) && checkDown(grid) && checkLeft(grid) && checkRight(grid);
+    checkIsGridEmpty(grid) && newGame();
+  }, [grid, newGame]);
 
-      noMovesAvailable && setModalIsOpen(true);
-    };
-
-    if (checkIsGridFull(grid)) checkIsGameLost();
-  }, [grid]);
+  const updateBestScore = useCallback(
+    score => {
+      if (score <= bestScore) return;
+      setBestScore(score);
+      setIsBestScoreInCurrentGame(true);
+    },
+    [bestScore, setBestScore, setIsBestScoreInCurrentGame],
+  );
 
   useEffect(() => {
-    updateBestScore(score)
+    if (checkIsGridFull(grid)) checkIsGameLost();
+  }, [checkIsGameLost, grid, setModalIsOpen]);
+
+  useEffect(() => {
+    updateBestScore(score);
 
     const gridNode = gridRef.current;
     let gridClone = arrayClone(grid);
@@ -139,11 +162,13 @@ const Grid = () => {
           break;
       }
 
+      const conditionForSpawnRandomCell = !arraysEqual(grid, gridClone) && !checkIsGridFull(gridClone);
+      conditionForSpawnRandomCell && spawnRandomCell(gridClone);
+
       setLastTurnScore(score);
       setScore(score => score + roundScore);
 
       setLastTurnGrid(grid);
-      !arraysEqual(grid, gridClone) && spawnRandomCell(gridClone);
       setGrid(gridClone);
     };
 
@@ -161,7 +186,16 @@ const Grid = () => {
       gridNode.removeEventListener('touchstart', handleTouchStart);
       gridNode.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [bestScore, grid, score, updateBestScore]);
+  }, [
+    bestScore,
+    grid,
+    score,
+    setGrid,
+    setLastTurnGrid,
+    setLastTurnScore,
+    setScore,
+    updateBestScore,
+  ]);
 
   const handleUndoClick = () => {
     if (arraysEqual(lastTurnGrid, inititalState)) return;
@@ -184,9 +218,9 @@ const Grid = () => {
         </div>
       </header>
       <main ref={gridRef} className="grid">
-        {grid.map(row =>
+        {grid.map((row, index) =>
           row.map((cell, column) => (
-            <Cell key={column} cell={cell} row={row} column={column} />
+            <Cell key={uuid()} cell={cell} row={index} column={column} />
           )),
         )}
       </main>
