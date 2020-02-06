@@ -1,14 +1,24 @@
 export class emptyCell {
-  constructor() {
+  constructor(row, column, prevRow, prevColumn) {
+    this.row = row;
+    this.column = column;
+
+    this.prevRow = prevRow;
+    this.prevColumn = prevColumn;
+
     this.value = 0;
     this.className = 'empty';
   }
 }
 
 class randomCell {
-  constructor() {
+  constructor(prevRow, prevColumn) {
     this.row = Math.floor(Math.random() * Math.floor(4));
     this.column = Math.floor(Math.random() * Math.floor(4));
+    
+    this.prevRow = prevRow;
+    this.prevColumn = prevColumn;
+
     this.value = Math.random() > 0.9 ? 4 : 2;
     this.className = 'emerged';
   }
