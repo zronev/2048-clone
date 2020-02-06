@@ -1,17 +1,22 @@
-import React from 'react'
+import React from 'react';
+import classNames from 'classnames';
 
-const Cell = ({ cell }) => {
-  const {value, className} = cell
+const Cell = ({ cell, row, column }) => {
+  const { value, className } = cell;
+  if (cell.className !== 'move-to-merge') {
+    cell.row = row;
+    cell.column = column;
+  }
 
-  return (
-    <div
-      className={`grid__cell grid__cell--${className}
-      ${value > 2 && value <= 2048 ? `grid__cell--${value}` : ''}
-      ${value > 2048 ? `grid__cell--over-2048` : ''}`}
-    >
-      {value ? value : ''}
-    </div>
-  )
-}
+  const cellClass = classNames({
+    cell: true,
+    [`grid__cell--${cell.row}-${cell.column}`]: cell.className !== 'empty',
+    [`cell--${className}`]: className,
+    [`cell--${value}`]: value > 2 && value <= 2048,
+    'cell--over-2048': value > 2048,
+  });
 
-export default Cell
+  return <div className={cellClass}>{value ? value : ''}</div>;
+};
+
+export default Cell;
