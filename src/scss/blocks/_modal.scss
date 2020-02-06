@@ -1,5 +1,11 @@
 .modal {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+  visibility: hidden;
 
   position: absolute;
   top: 32%;
@@ -12,10 +18,10 @@
 
   background: $main-background-color;
 
+  transition: all ease-out 3s;
+
   &--open {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    opacity: 1;
+    visibility: visible;
   }
 }
