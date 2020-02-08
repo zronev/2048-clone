@@ -2,13 +2,12 @@
   .grid {
     grid-gap: 0.8rem;
     padding: 0.8rem;
+  }
 
-    &__cell {
-      width: 5rem;
-      height: 5rem;
-
-      font-size: 2.2em;
-    }
+  .cell {
+    width: 5rem;
+    height: 5rem;
+    font-size: 2.2em;
   }
 }
 
@@ -16,13 +15,12 @@
   .grid {
     grid-gap: 0.7rem;
     padding: 0.7rem;
+  }
 
-    &__cell {
-      width: 4rem;
-      height: 4rem;
-
-      font-size: 2em;
-    }
+  .cell {
+    width: 4rem;
+    height: 4rem;
+    font-size: 2em;
   }
 }
 
@@ -30,12 +28,11 @@
   .grid {
     grid-gap: 0.6rem;
     padding: 0.6rem;
+  }
 
-    &__cell {
-      width: 3.7rem;
-      height: 3.7rem;
-
-      font-size: 1.8em;
-    }
+  .cell {
+    width: 3.7rem;
+    height: 3.7rem;
+    font-size: 1.8em;
   }
 }
