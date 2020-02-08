@@ -1,4 +1,4 @@
-# 2048-clone
+# 2048 Clone
 [Original game by Gabriele Cirulli](https://play2048.co/). I've just cloned the game for fun and testing my code skills.
 
 ## Installation
